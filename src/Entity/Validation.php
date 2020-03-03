@@ -17,16 +17,6 @@ class Validation
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $author;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $item;
-
-    /**
      * @ORM\Column(type="datetime")
      */
     private $validatedOn;
@@ -46,33 +36,19 @@ class Validation
      */
     private $feedback;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     */
+    private $author;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Item")
+     */
+    private $item;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getAuthor(): ?string
-    {
-        return $this->author;
-    }
-
-    public function setAuthor(string $author): self
-    {
-        $this->author = $author;
-
-        return $this;
-    }
-
-    public function getItem(): ?string
-    {
-        return $this->item;
-    }
-
-    public function setItem(string $item): self
-    {
-        $this->item = $item;
-
-        return $this;
     }
 
     public function getValidatedOn(): ?\DateTimeInterface
@@ -119,6 +95,30 @@ class Validation
     public function setFeedback(string $feedback): self
     {
         $this->feedback = $feedback;
+
+        return $this;
+    }
+
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?User $author): self
+    {
+        $this->author = $author;
+
+        return $this;
+    }
+
+    public function getItem(): ?Item
+    {
+        return $this->item;
+    }
+
+    public function setItem(?Item $item): self
+    {
+        $this->item = $item;
 
         return $this;
     }

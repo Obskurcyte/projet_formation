@@ -26,10 +26,6 @@ class Item
      */
     private $description;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $course;
 
     /**
      * @ORM\Column(type="integer")
@@ -56,6 +52,12 @@ class Item
      */
     private $difficulty;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Course")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $course;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -81,18 +83,6 @@ class Item
     public function setDescription(string $description): self
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    public function getCourse(): ?string
-    {
-        return $this->course;
-    }
-
-    public function setCourse(string $course): self
-    {
-        $this->course = $course;
 
         return $this;
     }
@@ -153,6 +143,18 @@ class Item
     public function setDifficulty(int $difficulty): self
     {
         $this->difficulty = $difficulty;
+
+        return $this;
+    }
+
+    public function getCourse(): ?Course
+    {
+        return $this->course;
+    }
+
+    public function setCourse(?Course $course): self
+    {
+        $this->course = $course;
 
         return $this;
     }

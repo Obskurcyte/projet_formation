@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -24,16 +26,6 @@ class Course
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $createdBy;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $teachers;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
     private $name;
 
     /**
@@ -47,9 +39,27 @@ class Course
     private $open;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="courses")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $createdBy;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="courses")
+     */
+    private $teachers;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\User")
      */
     private $students;
+
+    public function __construct()
+    {
+        $this->teachers = new ArrayCollection();
+        $this->students = new ArrayCollection();
+    }
+
 
     public function getId(): ?int
     {
@@ -64,30 +74,6 @@ class Course
     public function setTitle(string $title): self
     {
         $this->title = $title;
-
-        return $this;
-    }
-
-    public function getCreatedBy(): ?string
-    {
-        return $this->createdBy;
-    }
-
-    public function setCreatedBy(string $createdBy): self
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    public function getTeachers(): ?string
-    {
-        return $this->teachers;
-    }
-
-    public function setTeachers(string $teachers): self
-    {
-        $this->teachers = $teachers;
 
         return $this;
     }
@@ -128,15 +114,69 @@ class Course
         return $this;
     }
 
-    public function getStudents(): ?string
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): self
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getTeachers(): Collection
+    {
+        return $this->teachers;
+    }
+
+    public function addTeacher(User $teacher): self
+    {
+        if (!$this->teachers->contains($teacher)) {
+            $this->teachers[] = $teacher;
+        }
+
+        return $this;
+    }
+
+    public function removeTeacher(User $teacher): self
+    {
+        if ($this->teachers->contains($teacher)) {
+            $this->teachers->removeElement($teacher);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getStudents(): Collection
     {
         return $this->students;
     }
 
-    public function setStudents(string $students): self
+    public function addStudent(User $student): self
     {
-        $this->students = $students;
+        if (!$this->students->contains($student)) {
+            $this->students[] = $student;
+        }
 
         return $this;
     }
+
+    public function removeStudent(User $student): self
+    {
+        if ($this->students->contains($student)) {
+            $this->students->removeElement($student);
+        }
+
+        return $this;
+    }
+
+
 }
