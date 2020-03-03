@@ -45,11 +45,6 @@ class Course
     private $createdBy;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="courses")
-     */
-    private $teachers;
-
-    /**
      * @ORM\ManyToMany(targetEntity="App\Entity\User")
      */
     private $students;
@@ -122,32 +117,6 @@ class Course
     public function setCreatedBy(?User $createdBy): self
     {
         $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|User[]
-     */
-    public function getTeachers(): Collection
-    {
-        return $this->teachers;
-    }
-
-    public function addTeacher(User $teacher): self
-    {
-        if (!$this->teachers->contains($teacher)) {
-            $this->teachers[] = $teacher;
-        }
-
-        return $this;
-    }
-
-    public function removeTeacher(User $teacher): self
-    {
-        if ($this->teachers->contains($teacher)) {
-            $this->teachers->removeElement($teacher);
-        }
 
         return $this;
     }
