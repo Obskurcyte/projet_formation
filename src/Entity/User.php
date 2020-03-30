@@ -7,13 +7,19 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @UniqueEntity("username")
- * @UniqueEntity("email")
+ * @UniqueEntity(
+ *     fields={"email"},
+ *     message="L'email que vous avez indiqué est déjà utilisé !"
+ * )
+ * @UniqueEntity(
+ *     fields={"username"},
+ *     message="L'identifiant que vous avez indiqué est déjà utilisé !"
+ * )
  */
-class User
+class User implements UserInterface
 {
     /**
      * @ORM\Id()
@@ -36,8 +42,15 @@ class User
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\EqualTo(propertyPath="confirm_password", message="Vous n'avez pas tapé le même mot de passe")
      */
     private $password;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\EqualTo(propertyPath="password", message="Vous n'avez pas tapé le même mot de passe")
+     */
+    public $confirm_password;
 
     /**
      * @ORM\Column(type="guid")
@@ -64,9 +77,15 @@ class User
      */
     private $courses;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Role", mappedBy="users")
+     */
+    private $userRoles;
+
     public function __construct()
     {
         $this->courses = new ArrayCollection();
+        $this->userRoles = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -110,9 +129,34 @@ class User
         return $this;
     }
 
+    public function getConfirmPassword(): ?string
+    {
+        return $this->confirm_password;
+    }
+
+    public function setConfirmPassword(string $confirm_password): self
+    {
+        $this->password = $confirm_password;
+
+        return $this;
+    }
     public function getRoles(): ?string
     {
-        return $this->roles;
+        $roles = $this->userRoles->toArray();
+
+        dump($roles);
+
+        $roles = $this->userRoles->map(function($role){
+            return $role->getTitle();
+        })->toArray();
+
+        $roles[] = 'ROLE_USER';
+
+        dump($roles);
+
+        die();
+
+        return ['ROLE_USER'];
     }
 
     public function setRoles(string $roles): self
@@ -188,4 +232,39 @@ class User
 
         return $this;
     }
+
+    public function eraseCredentials(){}
+
+    public function getSalt(){}
+
+    /**
+     * @return Collection|Role[]
+     */
+    public function getUserRoles(): Collection
+    {
+        return $this->userRoles;
+    }
+
+    public function addUserRole(Role $userRole): self
+    {
+        if (!$this->userRoles->contains($userRole)) {
+            $this->userRoles[] = $userRole;
+            $userRole->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserRole(Role $userRole): self
+    {
+        if ($this->userRoles->contains($userRole)) {
+            $this->userRoles->removeElement($userRole);
+            $userRole->removeUser($this);
+        }
+
+        return $this;
+    }
+
+
+
 }
