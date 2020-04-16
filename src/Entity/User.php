@@ -25,17 +25,17 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @ORM\Column(name="username", type="string", length=255, unique=true)
-     * @ORM\Column(name="email", type="string", length=255, unique=true)
      */
     private $id;
 
     /**
+     * @ORM\Column(name="username", type="string", length=255, unique=true)
      * @ORM\Column(type="string", length=255)
      */
     private $username;
 
     /**
+     * @ORM\Column(name="email", type="string", length=255, unique=true)
      * @ORM\Column(type="string", length=255)
      */
     private $email;
@@ -140,22 +140,7 @@ class User implements UserInterface
 
         return $this;
     }
-    public function getRoles(): ?string
-    {
-        $roles = $this->userRoles->toArray();
-
-        dump($roles);
-
-        $roles = $this->userRoles->map(function($role){
-            return $role->getTitle();
-        })->toArray();
-
-        $roles[] = 'ROLE_USER';
-
-        dump($roles);
-
-        die();
-
+    public function getRoles(){
         return ['ROLE_USER'];
     }
 
@@ -264,7 +249,6 @@ class User implements UserInterface
 
         return $this;
     }
-
 
 
 }
